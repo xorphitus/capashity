@@ -3,32 +3,45 @@
   (:require [integrant.core :as ig]
             [clojure.java.jdbc :as jdbc]))
 
-(def mysql-db {:dbtype   "mysql"
-               :dbname   "test_db"
-               :user     "root"
-               :password "password"})
+(def config
+  {:setting/db {:dbtype   "mysql"
+                :dbname   "test_db"
+                :user     "root"
+                :password "password"}
+   :result/histories (atom [])})
+
+(defmethod ig/init-key :setting/db [_ conf]
+  "currently, there's nothing to do"
+  conf)
+
+(defmethod ig/init-key :result/histories [_ conf]
+  "currently, there's nothing to do"
+  conf)
+
+(defmethod ig/halt-key! :result/histories [_ histories]
+  (reset! histories []))
+
+(def system
+  (ig/init config))
 
 (defn get-tables []
-  (map #(val (first %)) (jdbc/query mysql-db "SHOW TABLES")))
+  (map #(val (first %)) (jdbc/query (:setting/db system) "SHOW TABLES")))
 
 (defn count-rows [table]
   (->
-   (jdbc/query mysql-db (str "SELECT count(*) FROM " table))
+   (jdbc/query (:setting/db system) (str "SELECT count(*) FROM " table))
    first
    first
    val))
 
 (defn count-for-tables []
-  (->>
-    (get-tables)
-    (map (fn[table] {:name table
-                     :count (count-rows table)}))))
-
-(def row-counts-histories (atom []))
+  (->> (get-tables)
+       (map (fn[table] {:name table
+                        :count (count-rows table)}))))
 
 (defn measure [event-name]
-  (swap! row-counts-histories #(conj % {:event event-name
-                                        :counts (count-for-tables)})))
+  (swap! (:result/histories system) #(conj % {:event event-name
+                                              :counts (count-for-tables)})))
 
 (defn sub-counts [prev next]
   (->> (concat prev next)
