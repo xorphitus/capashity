@@ -30,9 +30,12 @@
   (swap! row-counts-histories #(conj % {:event event-name
                                         :counts (count-for-tables)})))
 
-(defn sub-counts [a b]
-  ;; TODO subtract counts
-  b)
+(defn sub-counts [prev next]
+  (->> (concat prev next)
+       (group-by :name)
+       vals
+       (map (fn[x] {:name (:name (last x))
+                    :count (- (:count (last x) (:count (first x))))}))))
 
 (defn sum-up [data]
   (->> data
