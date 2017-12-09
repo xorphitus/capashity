@@ -23,9 +23,15 @@
     (jdbc/drop-table-ddl :vegetable)]))
 
 (defn handler [req]
-  {:status 200
-   :headers {"Content-Type" "text/plain"}
-   :body "Hello, world"})
+  (let [path (:uri req)
+        params (filter #(not (empty? %))
+                       (clojure.string/split path #"/"))
+        table (first params)]
+    (do
+      (jdbc/insert! db (keyword table) {})
+      {:status 200
+       :headers {"Content-Type" "text/plain"}
+       :body (format "A record is inserted into table \"%s\"" table)})))
 
 (defn start-server []
   (when-not @server
@@ -35,6 +41,11 @@
   (when @server
     (.stop @server)
     (reset! server nil)))
+
+(defn restart-server []
+  (do
+    (stop-server)
+    (start-server)))
 
 (defn start []
   (do
