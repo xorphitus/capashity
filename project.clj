@@ -6,7 +6,10 @@
   :dependencies [[org.clojure/clojure "1.9.0-alpha17"]
                  [integrant "0.6.1"]
                  [org.clojure/java.jdbc "0.7.3"]
-                 [mysql/mysql-connector-java "5.1.45"]]
+                 [mysql/mysql-connector-java "5.1.45"]
+                 ;; for mock server
+                 [ring/ring-core "1.6.3"]
+                 [ring/ring-jetty-adapter "1.6.3"]]
   :main ^:skip-aot capashity.core
   :target-path "target/%s"
   :profiles {:uberjar {:aot :all}})
