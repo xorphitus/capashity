@@ -1,0 +1,4 @@
+[{:method :get, :url "http://localhost:3000/fruit", :param {}}
+ {:method :get, :url "http://localhost:3000/fruit", :param {}}
+ {:method :get, :url "http://localhost:3000/vegetable", :param {}}
+ {:method :get, :url "http://localhost:3000/fruit", :param {}}]

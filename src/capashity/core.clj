@@ -7,9 +7,13 @@
 
 (def config
   {:setting/db "database.edn"
+   :setting/events "events.edn"
    :result/histories (atom [])})
 
 (defmethod ig/init-key :setting/db [_ path]
+  (ig/read-string (slurp path)))
+
+(defmethod ig/init-key :setting/events [_ path]
   (ig/read-string (slurp path)))
 
 (defmethod ig/init-key :result/histories [_ conf]
@@ -58,7 +62,15 @@
                 {:event event
                  :counts (sub-counts (:counts prev) (:counts prev))})))))
 
-(defn -main
-  "I don't do a whole lot ... yet."
-  [& args]
-  (println "Hello, World!"))
+(defn fire [event]
+  (let [verb (condp = (:method event)
+               :get client/get
+               :post client/post)]
+    (verb (:url event) {:body (:param event)})))
+
+(defn -main [& args]
+  (do
+    (doseq [event (:setting/events system)]
+      (do (fire event)
+          (measure (:url event))))
+    (println (sum-up (:result/histories system)))))
