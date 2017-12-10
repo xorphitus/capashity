@@ -4,7 +4,7 @@
 
 (defonce server (atom nil))
 
-(def db (:setting/db capashity.core/config))
+(def db (:setting/db capashity.core/system))
 
 (defn construct-db []
   (jdbc/db-do-commands
