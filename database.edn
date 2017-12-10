@@ -1,0 +1,4 @@
+{:dbtype   "mysql"
+ :dbname   "test_db"
+ :user     "root"
+ :password "password"}

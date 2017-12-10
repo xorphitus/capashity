@@ -4,15 +4,11 @@
             [clojure.java.jdbc :as jdbc]))
 
 (def config
-  {:setting/db {:dbtype   "mysql"
-                :dbname   "test_db"
-                :user     "root"
-                :password "password"}
+  {:setting/db "database.edn"
    :result/histories (atom [])})
 
-(defmethod ig/init-key :setting/db [_ conf]
-  "currently, there's nothing to do"
-  conf)
+(defmethod ig/init-key :setting/db [_ path]
+  (ig/read-string (slurp path)))
 
 (defmethod ig/init-key :result/histories [_ conf]
   "currently, there's nothing to do"
