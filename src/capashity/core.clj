@@ -1,7 +1,9 @@
 (ns capashity.core
   (:gen-class)
   (:require [integrant.core :as ig]
-            [clojure.java.jdbc :as jdbc]))
+            [clojure.java.jdbc :as jdbc]
+            [cheshire.core :refer :all]
+            [clj-http.client :as client]))
 
 (def config
   {:setting/db "database.edn"
