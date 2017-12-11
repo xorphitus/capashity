@@ -45,32 +45,35 @@
   (swap! (:result/histories system) #(conj % {:event event-name
                                               :counts (count-for-tables)})))
 
-(defn sub-counts [prev next]
+(defn sub-counts [next prev]
   (->> (concat prev next)
        (group-by :name)
        vals
-       (map (fn[x] {:name (:name (last x))
-                    :count (- (:count (last x) (:count (first x))))}))))
+       (map (fn[x] {:name (:name (first x))
+                    :count (- (:count (second x))
+                              (:count (first x)))}))))
 
 (defn sum-up [data]
   (->> data
        (partition 2 1)
        (map (fn[datum]
               (let [prev (first datum)
-                    next (last datum)
+                    next (second datum)
                     event (:event next)]
                 {:event event
-                 :counts (sub-counts (:counts prev) (:counts prev))})))))
+                 :counts (sub-counts (:counts next) (:counts prev))})))))
 
 (defn fire [event]
   (let [verb (condp = (:method event)
                :get client/get
                :post client/post)]
-    (verb (:url event) {:body (:param event)})))
+    (verb (:url event) (:body (:param event)))))
 
 (defn -main [& args]
   (do
+    (measure "initial state")
     (doseq [event (:setting/events system)]
       (do (fire event)
           (measure (:url event))))
-    (println (sum-up (:result/histories system)))))
+    (let [histories (:result/histories system)]
+      (println (sum-up @histories)))))
