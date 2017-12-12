@@ -6,11 +6,11 @@
             [integrant.core :as ig]))
 
 (def config
-  {:setting/db "database.edn"
+  {:setting/dbs "databases.edn"
    :setting/events "events.edn"
    :result/histories (atom [])})
 
-(defmethod ig/init-key :setting/db [_ path]
+(defmethod ig/init-key :setting/dbs [_ path]
   (ig/read-string (slurp path)))
 
 (defmethod ig/init-key :setting/events [_ path]
@@ -26,24 +26,25 @@
 (def system
   (ig/init config))
 
-(defn get-tables []
-  (map #(val (first %)) (jdbc/query (:setting/db system) "SHOW TABLES")))
+(defn get-tables [db]
+  (map #(val (first %)) (jdbc/query db "SHOW TABLES")))
 
-(defn count-rows [table]
+(defn count-rows [db table]
   (->
-   (jdbc/query (:setting/db system) (str "SELECT count(*) FROM " table))
+   (jdbc/query db (str "SELECT count(*) FROM " table))
    first
    first
    val))
 
-(defn count-for-tables []
-  (->> (get-tables)
-       (map (fn[table] {:name table
-                        :count (count-rows table)}))))
+(defn count-for-tables [db]
+  (->> (get-tables db)
+       (map (fn[table] {:name (format "%s/%s" (:dbname db) table)
+                        :count (count-rows db table)}))))
 
 (defn measure [event-name]
-  (swap! (:result/histories system) #(conj % {:event event-name
-                                              :counts (count-for-tables)})))
+  (let [all-counts (mapcat count-for-tables (:setting/dbs system))]
+    (swap! (:result/histories system) #(conj % {:event event-name
+                                                :counts all-counts}))))
 
 (defn sub-counts [next prev]
   (->> (concat prev next)

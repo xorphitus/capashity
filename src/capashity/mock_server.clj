@@ -4,8 +4,6 @@
 
 (defonce server (atom nil))
 
-(def db (:setting/db capashity.core/system))
-
 (defn construct-db []
   (jdbc/db-do-commands
    db
@@ -22,13 +20,18 @@
    [(jdbc/drop-table-ddl :fruit)
     (jdbc/drop-table-ddl :vegetable)]))
 
+(defn find-db [name]
+  (first (filter #(= name (:dbname %))
+                 (:setting/dbs capashity.core/system))))
+
 (defn handler [req]
   (let [path (:uri req)
         params (filter #(not (empty? %))
                        (clojure.string/split path #"/"))
-        table (first params)]
+        db-name (first params)
+        table (second params)]
     (do
-      (jdbc/insert! db (keyword table) {})
+      (jdbc/insert! (find-db db-name) (keyword table) {})
       {:status 200
        :headers {"Content-Type" "text/plain"}
        :body (format "A record is inserted into table \"%s\"" table)})))
