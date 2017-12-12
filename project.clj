@@ -9,6 +9,7 @@
                  [clj-http "3.7.0"]
                  [integrant "0.6.1"]
                  [mysql/mysql-connector-java "5.1.45"]
+                 [com.taoensso/timbre "4.10.0"]
                  ;; for mock server
                  [ring/ring-core "1.6.3"]
                  [ring/ring-jetty-adapter "1.6.3"]]

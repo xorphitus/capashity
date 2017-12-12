@@ -1,6 +1,7 @@
 (ns capashity.mock-server
   (:require [clojure.java.jdbc :as jdbc]
-            [ring.adapter.jetty :as server]))
+            [ring.adapter.jetty :as server]
+            [taoensso.timbre :as timbre]))
 
 (defonce server (atom nil))
 
@@ -32,6 +33,7 @@
         table (second params)]
     (do
       (jdbc/insert! (find-db db-name) (keyword table) {})
+      (timbre/debug "record inserted")
       {:status 200
        :headers {"Content-Type" "text/plain"}
        :body (format "A record is inserted into table \"%s\"" table)})))

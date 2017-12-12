@@ -3,7 +3,8 @@
   (:require [clojure.java.jdbc :as jdbc]
             [cheshire.core :refer :all]
             [clj-http.client :as client]
-            [integrant.core :as ig]))
+            [integrant.core :as ig]
+            [taoensso.timbre :as timbre]))
 
 (def config
   {:setting/dbs "databases.edn"
@@ -42,7 +43,8 @@
                         :count (count-rows db table)}))))
 
 (defn measure [event-name]
-  (let [all-counts (mapcat count-for-tables (:setting/dbs system))]
+  (let [all-counts (doall (mapcat count-for-tables (:setting/dbs system)))]
+    (timbre/debug "counts measured")
     (swap! (:result/histories system) #(conj % {:event event-name
                                                 :counts all-counts}))))
 
@@ -68,6 +70,7 @@
   (let [verb (condp = (:method event)
                :get client/get
                :post client/post)]
+    (timbre/debug "event fired")
     (verb (:url event) (:body (:param event)))))
 
 (defn -main [& args]
