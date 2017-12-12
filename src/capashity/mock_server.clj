@@ -4,7 +4,7 @@
 
 (defonce server (atom nil))
 
-(defn construct-db []
+(defn construct-db [db]
   (jdbc/db-do-commands
    db
    [(jdbc/create-table-ddl :fruit
@@ -14,7 +14,7 @@
                            [[:name "varchar(32)"]
                             [:cost :int]])]))
 
-(defn destruct-db []
+(defn destruct-db [db]
   (jdbc/db-do-commands
    db
    [(jdbc/drop-table-ddl :fruit)
@@ -52,10 +52,12 @@
 
 (defn start []
   (do
-    (construct-db)
+    (doseq [db (:setting/dbs capashity.core/system)]
+      (construct-db db))
     (start-server)))
 
 (defn stop []
   (do
-    (destruct-db)
+    (doseq [db (:setting/dbs capashity.core/system)]
+      (destruct-db db))
     (stop-server)))
