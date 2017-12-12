@@ -1,36 +1,51 @@
 # capashity
 
-FIXME: description
+Capashity estimates how many records will be inserted into a database for a Web system.
 
-## Installation
+It calls a web system's HTTP request  which create some records, then it measures the counts of records.
 
-Download from http://example.com/FIXME.
+* suppots multiple databases
+* only supports RDBMS
 
 ## Usage
 
-FIXME: explanation
+First, edit the configuration files
 
-    $ java -jar capashity-0.1.0-standalone.jar [args]
+* `databases.edn`
+* `events.edn`
 
-## Options
+then, execute the command
 
-FIXME: listing of options this app accepts.
+```
+$ lein run
+```
 
-## Examples
+## For development
 
-...
+Docker Compose and Mock Server are available.
 
-### Bugs
+Docker Compose is used for a database.
 
-...
+```
+$ docker-compose up -d
+```
 
-### Any Other Sections
-### That You Think
-### Might be Useful
+Mock Server is a dummy HTTP server and it inserts records for databases.
+
+```
+$ lein repl
+capashity.core=> (ns capashity.mock-server)
+capashity.mock-server=> (start)
+```
+
+The request format of Mock Server is shown below.
+
+```
+GET http://localhost:3000/${db-name}/${table-name}
+```
 
 ## License
 
-Copyright © 2017 FIXME
+Copyright © 2017 xorphitus
 
-Distributed under the Eclipse Public License either version 1.0 or (at
-your option) any later version.
+Distributed under the Eclipse Public License either version 1.0 or any later version.
