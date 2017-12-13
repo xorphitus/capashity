@@ -12,9 +12,11 @@
    :setting/events "events.edn"
    :result/histories (atom [])})
 
+;; TODO: validate file contents
 (defmethod ig/init-key :setting/dbs [_ path]
   (ig/read-string (slurp path)))
 
+;; TODO: validate file contents
 (defmethod ig/init-key :setting/events [_ path]
   (ig/read-string (slurp path)))
 
@@ -32,6 +34,10 @@
 (defn get-tables [db]
   (map #(val (first %)) (jdbc/query db "SHOW TABLES")))
 
+;; TODO: concatinate count queries for performance
+;;   SELECT
+;;     (SELECT count(*) FROM foo) AS foo,
+;;     (SELECT count(*) FROM bar) AS bar,
 (defn count-rows [db table]
   (->
    (jdbc/query db (str "SELECT count(*) FROM " table))
@@ -69,6 +75,7 @@
                 {:event event
                  :counts (sub-counts (:counts next) (:counts prev))})))))
 
+;; TODO: print event name when an http call is failed
 (defn fire [event]
   (let [verb (condp = (:method event)
                :get client/get
