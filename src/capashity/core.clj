@@ -28,6 +28,7 @@
 (def system
   (ig/init config))
 
+;; TODO: memoize
 (defn get-tables [db]
   (map #(val (first %)) (jdbc/query db "SHOW TABLES")))
 
@@ -40,7 +41,7 @@
 
 (defn count-for-tables [db]
   (->> (get-tables db)
-       (map (fn[table] {:name (format "%s/%s" (:dbname db) table)
+       (map (fn[table] {:name (format "%s.%s" (:dbname db) table)
                         :count (count-rows db table)}))))
 
 (defn measure [event-name]
@@ -57,6 +58,7 @@
                     :count (- (:count (second x))
                               (:count (first x)))}))))
 
+;; TODO: trim "initial state" data
 (defn sum-up [data]
   (->> data
        (partition 2 1)
@@ -74,12 +76,18 @@
     (timbre/debug "event fired")
     (verb (:url event) (:body (:param event)))))
 
+(defn lablize-event [ev]
+  (timbre/debug {:method ev})
+  (format "%s %s"
+          (.toUpperCase (name (:method ev)))
+          (:url ev)))
+
 (defn -main [& args]
   (do
     (measure "initial state")
     (doseq [event (:setting/events system)]
       (do (fire event)
-          (measure (:url event))))
+          (measure (lablize-event event))))
     (let [histories (:result/histories system)]
       (println (publish-html
                 (sum-up @histories))))))
