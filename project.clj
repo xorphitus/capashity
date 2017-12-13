@@ -7,6 +7,7 @@
                  [org.clojure/java.jdbc "0.7.3"]
                  [cheshire "5.8.0"]
                  [clj-http "3.7.0"]
+                 [hiccup "1.0.5"]
                  [integrant "0.6.1"]
                  [mysql/mysql-connector-java "5.1.45"]
                  [com.taoensso/timbre "4.10.0"]

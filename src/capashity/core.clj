@@ -1,6 +1,7 @@
 (ns capashity.core
   (:gen-class)
-  (:require [clojure.java.jdbc :as jdbc]
+  (:require [capashity.report :refer [publish-html]]
+            [clojure.java.jdbc :as jdbc]
             [cheshire.core :refer :all]
             [clj-http.client :as client]
             [integrant.core :as ig]
@@ -80,4 +81,5 @@
       (do (fire event)
           (measure (:url event))))
     (let [histories (:result/histories system)]
-      (println (sum-up @histories)))))
+      (println (publish-html
+                (sum-up @histories))))))
