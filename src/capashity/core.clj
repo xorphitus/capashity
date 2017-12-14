@@ -2,7 +2,7 @@
   (:gen-class)
   (:require [capashity.report :refer [publish-html]]
             [clojure.java.jdbc :as jdbc]
-            [cheshire.core :refer :all]
+            [cheshire.core :refer [generate-string]]
             [clj-http.client :as client]
             [integrant.core :as ig]
             [taoensso.timbre :as timbre]))
@@ -77,11 +77,13 @@
 
 ;; TODO: print event name when an http call is failed
 (defn fire [event]
-  (let [verb (condp = (:method event)
-               :get client/get
-               :post client/post)]
+  (do
     (timbre/debug "event fired")
-    (verb (:url event) (:body (:param event)))))
+    (client/request
+     {:method (:method event)
+      :headers (:headers event)
+      :url (:url event)
+      :body (generate-string (:param event))})))
 
 (defn lablize-event [ev]
   (timbre/debug {:method ev})
