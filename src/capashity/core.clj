@@ -10,6 +10,7 @@
 (def config
   {:setting/dbs "databases.edn"
    :setting/events "events.edn"
+   :result/tables (atom {})
    :result/histories (atom [])})
 
 ;; TODO: validate file contents
@@ -21,9 +22,16 @@
 (defmethod ig/init-key :setting/events [_ path]
   (ig/read-string (slurp path)))
 
+(defmethod ig/init-key :result/tables [_ conf]
+  "currently, there's nothing to do"
+  conf)
+
 (defmethod ig/init-key :result/histories [_ conf]
   "currently, there's nothing to do"
   conf)
+
+(defmethod ig/halt-key! :result/tables [_ tables]
+  (reset! tables {}))
 
 (defmethod ig/halt-key! :result/histories [_ histories]
   (reset! histories []))
@@ -31,9 +39,13 @@
 (def system
   (ig/init config))
 
-;; TODO: memoize
 (defn get-tables [db]
-  (map #(val (first %)) (jdbc/query db "SHOW TABLES")))
+  (let [cache-key (format "%s:%d/%s" (:host db) (:port db) (:dbname db))]
+    (if-let [tbls (get (deref (:result/tables system)) cache-key)]
+      tbls
+      (let [tbls (map #(val (first %)) (jdbc/query db "SHOW TABLES"))]
+        (swap! (:result/tables system) assoc cache-key tbls)
+        tbls))))
 
 ;; TODO: concatinate count queries for performance
 ;;   SELECT
