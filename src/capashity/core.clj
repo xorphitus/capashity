@@ -31,9 +31,6 @@
 (def system
   (ig/init config))
 
-(ig/halt! system)
-(-main)
-
 ;; TODO: memoize
 (defn get-tables [db]
   (map #(val (first %)) (jdbc/query db "SHOW TABLES")))
