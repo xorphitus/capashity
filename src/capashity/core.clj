@@ -2,10 +2,11 @@
   (:gen-class)
   (:require [capashity.report :refer [publish-html]]
             [clojure.java.jdbc :as jdbc]
-            [cheshire.core :refer [generate-string]]
+            [cheshire.core :refer [generate-string parse-string]]
             [clj-http.client :as client]
             [integrant.core :as ig]
-            [taoensso.timbre :as timbre]))
+            [taoensso.timbre :as timbre]
+            [selmer.parser :as selmer-parser]))
 
 (def config
   {:setting/dbs "databases.edn"
@@ -89,14 +90,21 @@
                  :counts (sub-counts (:counts next) (:counts prev))})))))
 
 ;; TODO: print event name when an http call is failed
-(defn fire [event]
-  (do
-    (timbre/debug "event fired" (:url event))
-    (client/request
-     {:method (:method event)
-      :headers (:headers event)
-      :url (:url event)
-      :body (generate-string (:param event))})))
+(defn fire
+  ([event] (fire event {}))
+  ([event params]
+   (do
+     (timbre/debug "event fired" (:url event))
+     (-> {:method (:method event)
+          :headers (:headers event)
+          :url (:url event)
+          :body (-> event
+                    :param
+                    generate-string
+                    (selmer-parser/render params))}
+         client/request
+         :body
+         (parse-string true)))))
 
 (defn lablize-event [ev]
   (timbre/debug {:method ev})

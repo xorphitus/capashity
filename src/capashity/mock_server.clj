@@ -1,5 +1,6 @@
 (ns capashity.mock-server
   (:require [clojure.java.jdbc :as jdbc]
+            [cheshire.core :refer [generate-string]]
             [ring.adapter.jetty :as server]
             [taoensso.timbre :as timbre]))
 
@@ -36,7 +37,8 @@
       (timbre/debug "record inserted")
       {:status 200
        :headers {"Content-Type" "text/plain"}
-       :body (format "A record is inserted into table \"%s\"" table)})))
+       :body (generate-string {:db db-name
+                               :table table})})))
 
 (defn start-server []
   (when-not @server
