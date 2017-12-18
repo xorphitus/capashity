@@ -17,6 +17,7 @@
   (ig/read-string (slurp path)))
 
 ;; TODO: validate file contents
+;; TODO: enable variables
 (defmethod ig/init-key :setting/events [_ path]
   (ig/read-string (slurp path)))
 
