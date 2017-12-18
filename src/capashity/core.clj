@@ -30,6 +30,9 @@
 (def system
   (ig/init config))
 
+(ig/halt! system)
+(-main)
+
 ;; TODO: memoize
 (defn get-tables [db]
   (map #(val (first %)) (jdbc/query db "SHOW TABLES")))
@@ -78,7 +81,7 @@
 ;; TODO: print event name when an http call is failed
 (defn fire [event]
   (do
-    (timbre/debug "event fired")
+    (timbre/debug "event fired" (:url event))
     (client/request
      {:method (:method event)
       :headers (:headers event)
@@ -98,5 +101,6 @@
       (do (fire event)
           (measure (lablize-event event))))
     (let [histories (:result/histories system)]
-      (println (publish-html
-                (sum-up @histories))))))
+      (spit "report.html"
+            (publish-html
+             (sum-up @histories))))))

@@ -1,5 +1,6 @@
 databases.edn
 events.edn
+report.html
 
 /target
 /classes
