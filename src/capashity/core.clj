@@ -21,7 +21,8 @@
 ;; TODO: validate file contents
 ;; TODO: enable variables
 (defmethod ig/init-key :setting/events [_ path]
-  (ig/read-string (slurp path)))
+  (remove :skip
+    (ig/read-string (slurp path))))
 
 (defmethod ig/init-key :result/tables [_ conf]
   "currently, there's nothing to do"
@@ -95,9 +96,10 @@
   ([event params]
    (do
      (timbre/debug "event fired" (:url event))
+     (timbre/debug (selmer-parser/render (:url event) params))
      (-> {:method (:method event)
           :headers (:headers event)
-          :url (:url event)
+          :url (selmer-parser/render (:url event) params)
           :body (-> event
                     :param
                     generate-string
