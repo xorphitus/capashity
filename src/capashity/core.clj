@@ -106,7 +106,7 @@
          :body
          (parse-string true)))))
 
-(defn lablize-event [ev]
+(defn labelize-event [ev]
   (timbre/debug {:method ev})
   (format "%s %s"
           (.toUpperCase (name (:method ev)))
@@ -118,7 +118,7 @@
     (loop [[fst & rst] (:setting/events system)
            params {}]
       (let [response (fire fst params)]
-        (measure (lablize-event fst))
+        (measure (labelize-event fst))
         (when-not (empty? rst)
           (recur rst response))))
     (let [histories (:result/histories system)]
