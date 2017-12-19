@@ -115,9 +115,12 @@
 (defn -main [& args]
   (do
     (measure "initial state")
-    (doseq [event (:setting/events system)]
-      (do (fire event)
-          (measure (lablize-event event))))
+    (loop [[fst & rst] (:setting/events system)
+           params {}]
+      (let [response (fire fst params)]
+        (measure (lablize-event fst))
+        (when-not (empty? rst)
+          (recur rst response))))
     (let [histories (:result/histories system)]
       (spit "report.html"
             (publish-html
