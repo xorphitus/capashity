@@ -96,7 +96,6 @@
   ([event params]
    (do
      (timbre/debug "event fired" (:url event))
-     (timbre/debug (selmer-parser/render (:url event) params))
      (-> {:method (:method event)
           :headers (:headers event)
           :url (selmer-parser/render (:url event) params)
@@ -120,7 +119,8 @@
     (loop [[fst & rst] (:setting/events system)
            params {}]
       (let [response (fire fst params)]
-        (measure (labelize-event fst))
+        (when-not (:decoy fst)
+          (measure (labelize-event fst)))
         (when-not (empty? rst)
           (recur rst response))))
     (let [histories (:result/histories system)]
