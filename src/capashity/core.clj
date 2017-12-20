@@ -8,6 +8,7 @@
             [taoensso.timbre :as timbre]
             [selmer.parser :as selmer-parser]))
 
+;; TODO: specify file pathes via command line arguments or environmental variables
 (def config
   {:setting/dbs "databases.edn"
    :setting/events "events.edn"
@@ -100,7 +101,7 @@
           :headers (:headers event)
           :url (selmer-parser/render (:url event) params)
           :body (-> event
-                    :param
+                    :param ; TODO: rename :param -> :body
                     generate-string
                     (selmer-parser/render params))}
          client/request

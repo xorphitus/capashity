@@ -20,6 +20,47 @@ then, execute the command
 $ lein run
 ```
 
+### events.edn
+
+Events are expressed by an vector.
+Each event is expressed by a map which has keys shown below.
+
+* `method`
+  * HTTP method
+  * required
+  * type: keyword (`:get`, `:post`, etc)
+* `headers`
+  * HTTP request headers
+  * optional
+  * type: map
+    * key: header name (string)
+    * value: header values (string)
+* `url`
+  * HTTP request url
+  * required
+  * type: string
+* `param`
+  * HTTP request body
+  * optional
+  * type: map
+    * this map is converted to a JSON text
+* `skip`
+  * if true, the event is ignored
+  * optional
+  * type: boolean
+* `decoy`
+  * if true, the event is going to be fired, but not measured
+  * optional
+  * type: boolean
+
+#### Template
+
+TBC
+
+#### Decoy event
+
+TBC
+
 ## For development
 
 Docker Compose and Mock Server are available.
