@@ -119,11 +119,15 @@
     (measure "initial state")
     (loop [[fst & rst] (:setting/events system)
            params {}]
+      (timbre/debug params)
       (let [response (fire fst params)]
         (when-not (:decoy fst)
           (measure (labelize-event fst)))
         (when-not (empty? rst)
-          (recur rst response))))
+          (recur rst
+                 (if (:takeover fst)
+                   (merge params response)
+                   response)))))
     (let [histories (:result/histories system)]
       (spit "report.html"
             (publish-html

@@ -52,6 +52,10 @@ Each event is expressed by a map which has keys shown below.
   * if true, the event is going to be fired, but not measured
   * optional
   * type: boolean
+* `takeover`
+  * if true, the event takes over its template parameter to the next event
+  * optional
+  * type: boolean
 
 #### Template
 
