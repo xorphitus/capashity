@@ -15,6 +15,7 @@
                  ;; for mock server
                  [ring/ring-core "1.6.3"]
                  [ring/ring-jetty-adapter "1.6.3"]]
+  :plugins [[lein-kibit "0.1.6"]]
   :main ^:skip-aot capashity.core
   :target-path "target/%s"
   :profiles {:uberjar {:aot :all}})

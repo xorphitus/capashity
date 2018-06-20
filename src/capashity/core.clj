@@ -62,9 +62,9 @@
    val))
 
 (defn count-for-tables [db]
-  (->> (get-tables db)
-       (map (fn[table] {:name (format "%s.%s" (:dbname db) table)
-                        :count (count-rows db table)}))))
+  (map (fn[table] {:name (format "%s.%s" (:dbname db) table)
+                   :count (count-rows db table)})
+       (get-tables db)))
 
 (defn measure [event-name]
   (let [all-counts (doall (mapcat count-for-tables (:setting/dbs system)))]
@@ -123,7 +123,7 @@
       (let [response (fire fst params)]
         (when-not (:decoy fst)
           (measure (labelize-event fst)))
-        (when-not (empty? rst)
+        (when (seq rst)
           (recur rst
                  (if (:takeover fst)
                    (merge params response)
