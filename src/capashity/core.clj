@@ -23,7 +23,7 @@
 ;; TODO: enable variables
 (defmethod ig/init-key :setting/events [_ path]
   (remove :skip
-    (ig/read-string (slurp path))))
+          (ig/read-string (slurp path))))
 
 (defmethod ig/init-key :result/tables [_ conf]
   "currently, there's nothing to do"
@@ -62,8 +62,8 @@
    val))
 
 (defn count-for-tables [db]
-  (map (fn[table] {:name (format "%s.%s" (:dbname db) table)
-                   :count (count-rows db table)})
+  (map (fn [table] {:name (format "%s.%s" (:dbname db) table)
+                    :count (count-rows db table)})
        (get-tables db)))
 
 (defn measure [event-name]
@@ -76,15 +76,15 @@
   (->> (concat prev next)
        (group-by :name)
        vals
-       (map (fn[x] {:name (:name (first x))
-                    :count (- (:count (second x))
-                              (:count (first x)))}))))
+       (map (fn [x] {:name (:name (first x))
+                     :count (- (:count (second x))
+                               (:count (first x)))}))))
 
 ;; TODO: trim "initial state" data
 (defn sum-up [data]
   (->> data
        (partition 2 1)
-       (map (fn[datum]
+       (map (fn [datum]
               (let [prev (first datum)
                     next (second datum)
                     event (:event next)]
