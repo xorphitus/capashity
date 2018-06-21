@@ -1,4 +1,7 @@
 language: clojure
+before_install:
+  - touch databases.edn
+  - touch events.edn
 script:
   - lein kibit src/capashity/core.clj
   - lein test
