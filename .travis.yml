@@ -5,4 +5,5 @@ before_install:
 script:
   - lein cljfmt check
   - lein kibit src/capashity/core.clj
+  - lein eastwood
   - lein test

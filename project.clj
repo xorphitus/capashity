@@ -16,7 +16,8 @@
                  [ring/ring-core "1.6.3"]
                  [ring/ring-jetty-adapter "1.6.3"]]
   :plugins [[lein-kibit "0.1.6"]
-            [lein-cljfmt "0.5.7"]]
+            [lein-cljfmt "0.5.7"]
+            [jonase/eastwood "0.2.6"]]
   :main ^:skip-aot capashity.core
   :target-path "target/%s"
   :profiles {:uberjar {:aot :all}

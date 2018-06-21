@@ -26,11 +26,11 @@
           (ig/read-string (slurp path))))
 
 (defmethod ig/init-key :result/tables [_ conf]
-  "currently, there's nothing to do"
+  ;; currently, there's nothing to do
   conf)
 
 (defmethod ig/init-key :result/histories [_ conf]
-  "currently, there's nothing to do"
+  ;; currently, there's nothing to do
   conf)
 
 (defmethod ig/halt-key! :result/tables [_ tables]
