@@ -4,6 +4,20 @@
             [ring.adapter.jetty :as server]
             [taoensso.timbre :as timbre]))
 
+(def db
+  {:classname "org.h2.Driver"
+   :subprotocol "h2"
+   ;; `DB_CLOSE_DELAY=-1` is required.
+   ;; otherwise, the content of the database is lost whenever the last connection is closed
+   :subname "mem:test_db;DB_CLOSE_DELAY=-1"
+   :user "root"
+   :password "password"
+   ;; H2 doesn't require dbname option
+   ;; but Capashity use this item for identifier
+   :dbname "dummy"})
+
+(def dbs [db])
+
 (defonce server (atom nil))
 
 (defn construct-db [db]
@@ -24,21 +38,20 @@
 
 (defn find-db [name]
   (first (filter #(= name (:dbname %))
-                 (:setting/dbs capashity.core/system))))
+                 dbs)))
 
 (defn handler [req]
   (let [path (:uri req)
-        params (filter #(not (empty? %))
+        params (remove empty?
                        (clojure.string/split path #"/"))
         db-name (first params)
         table (second params)]
-    (do
-      (jdbc/insert! (find-db db-name) (keyword table) {})
-      (timbre/debug "record inserted")
-      {:status 200
-       :headers {"Content-Type" "text/plain"}
-       :body (generate-string {:db db-name
-                               :table table})})))
+    (jdbc/insert! (find-db db-name) (keyword table) {})
+    (timbre/debug "record inserted")
+    {:status 200
+     :headers {"Content-Type" "text/plain"}
+     :body (generate-string {:db db-name
+                             :table table})}))
 
 (defn start-server []
   (when-not @server
@@ -48,20 +61,3 @@
   (when @server
     (.stop @server)
     (reset! server nil)))
-
-(defn restart-server []
-  (do
-    (stop-server)
-    (start-server)))
-
-(defn start []
-  (do
-    (doseq [db (:setting/dbs capashity.core/system)]
-      (construct-db db))
-    (start-server)))
-
-(defn stop []
-  (do
-    (doseq [db (:setting/dbs capashity.core/system)]
-      (destruct-db db))
-    (stop-server)))
