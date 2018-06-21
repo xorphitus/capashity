@@ -1,5 +1,7 @@
 # capashity
 
+[![Build Status](https://travis-ci.org/xorphitus/capashity.svg?branch=master)](https://travis-ci.org/xorphitus/capashity)
+
 Capashity estimates how many records will be inserted into a database for a Web system.
 
 It calls a web system's HTTP request  which create some records, then it measures the counts of records.
