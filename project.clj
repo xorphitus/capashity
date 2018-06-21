@@ -18,4 +18,5 @@
   :plugins [[lein-kibit "0.1.6"]]
   :main ^:skip-aot capashity.core
   :target-path "target/%s"
-  :profiles {:uberjar {:aot :all}})
+  :profiles {:uberjar {:aot :all}
+             :test {:dependencies [[com.h2database/h2 "1.4.197"]]}})

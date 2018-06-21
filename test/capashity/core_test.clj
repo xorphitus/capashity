@@ -3,12 +3,17 @@
             [capashity.core :refer :all]
             [capashity.mock-server :as mock-server]))
 
-(def db {:dbtype   "mysql"
-         :dbname   "test_db"
-         :host     "127.0.0.1"
-         :user     "root"
-         :password "password"
-         :useSSL false})
+(def db
+  {:classname "org.h2.Driver"
+   :subprotocol "h2"
+   ;; `DB_CLOSE_DELAY=-1` is required.
+   ;; otherwise, the content of the database is lost whenever the last connection is closed
+   :subname "mem:test_db;DB_CLOSE_DELAY=-1"
+   :user "root"
+   :password "password"
+   ;; H2 doesn't require dbname option
+   ;; but Capashity use this item for identifier
+   :dbname "dummy"})
 
 (use-fixtures :once
   (fn [f]
@@ -18,14 +23,14 @@
 
 (deftest test-get-tables
   (testing "first call (without cache)"
-    (is (= (get-tables db) ["fruit" "vegetable"])))
+    (is (= (get-tables db) ["FRUIT" "VEGETABLE"])))
   (testing "second call (with cache)"
-    (is (= (get-tables db) ["fruit" "vegetable"]))))
+    (is (= (get-tables db) ["FRUIT" "VEGETABLE"]))))
 
 (deftest test-count-for-tables
   (testing "first call (without cache)"
     (is (= (count-for-tables db)
-           [{:name "test_db.fruit"
+           [{:name "dummy.FRUIT"
              :count 0}
-            {:name "test_db.vegetable"
+            {:name "dummy.VEGETABLE"
              :count 0}]))))
