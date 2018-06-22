@@ -18,9 +18,17 @@
     (is (= (get-tables mock/db) ["FRUIT" "VEGETABLE"]))))
 
 (deftest test-count-for-tables
-  (testing "first call (without cache)"
+  (testing "first call"
     (is (= (count-for-tables mock/db)
            [{:name "dummy.FRUIT"
              :count 0}
             {:name "dummy.VEGETABLE"
-             :count 0}]))))
+             :count 0}])))
+  (testing "after api call"
+    (do
+      (fire {:method "GET" :url "http://localhost:3000/dummy/FRUIT"})
+      (is (= (count-for-tables mock/db)
+             [{:name "dummy.FRUIT"
+               :count 1}
+              {:name "dummy.VEGETABLE"
+               :count 0}])))))
