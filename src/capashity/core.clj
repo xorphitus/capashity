@@ -112,7 +112,7 @@
 (defn labelize-event [ev]
   (timbre/debug {:method ev})
   (format "%s %s"
-          (.toUpperCase (name (:method ev)))
+          (-> ev :method name .toUpperCase)
           (:url ev)))
 
 (defn -main [& args]

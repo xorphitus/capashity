@@ -32,3 +32,8 @@
                :count 1}
               {:name "dummy.VEGETABLE"
                :count 0}])))))
+
+(deftest test-labelize-event
+  (testing "generic case"
+    (let [event {:method :post :url "https://example.com/foo"}]
+      (is "POST https://example.com/foo" (labelize-event event)))))
