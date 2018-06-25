@@ -33,6 +33,38 @@
               {:name "dummy.VEGETABLE"
                :count 0}])))))
 
+(deftest test-sum-up
+  (testing "no data"
+    (let [input    [{}]
+          expected [{}]]
+      (is expected (sum-up input))))
+  (testing "has one datum"
+    (let [input    [{:event "POST foo"
+                     :counts [{:name "dummy.FRUIT", :count 0}]}]
+          expected [{:event "POST foo"
+                     :counts [{:name "dummy.FRUIT", :count 0}]}]]
+      (is expected (sum-up input))))
+  (testing "has sum data"
+    (let [input    [{:event "POST foo"
+                     :counts [{:name "dummy.FRUIT",     :count 1}
+                              {:name "dummy.VEGETABLE", :count 2}]}
+                    {:event "POST foo"
+                     :counts [{:name "dummy.FRUIT",     :count 2}
+                              {:name "dummy.VEGETABLE", :count 4}]}
+                    {:event "POST bar"
+                     :counts [{:name "dummy.FRUIT",     :count 0}
+                              {:name "dummy.VEGETABLE", :count 5}]}]
+          expected [{:event "POST foo"
+                     :counts [{:name "dummy.FRUIT",     :count 1}
+                              {:name "dummy.VEGETABLE", :count 2}]}
+                    {:event "POST foo"
+                     :counts [{:name "dummy.FRUIT",     :count 1}
+                              {:name "dummy.VEGETABLE", :count 2}]}
+                    {:event "POST bar"
+                     :counts [{:name "dummy.FRUIT",     :count -1}
+                              {:name "dummy.VEGETABLE", :count 1}]}]]
+      (is expected (sum-up input)))))
+
 (deftest test-labelize-event
   (testing "generic case"
     (let [event {:method :post :url "https://example.com/foo"}]
