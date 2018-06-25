@@ -6,6 +6,5 @@ before_install:
 script:
   - lein cljfmt check
   - lein kibit src test
-  # FIXME: it throws an exeption
-  # - lein eastwood
+  - lein eastwood "{:namespaces [:source-paths]}"
   - lein test
