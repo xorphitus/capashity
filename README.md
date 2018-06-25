@@ -67,30 +67,6 @@ TBC
 
 TBC
 
-## For development
-
-Docker Compose and Mock Server are available.
-
-Docker Compose is used for a database.
-
-```
-$ docker-compose up -d
-```
-
-Mock Server is a dummy HTTP server and it inserts records for databases.
-
-```
-$ lein repl
-capashity.core=> (ns capashity.mock-server)
-capashity.mock-server=> (start)
-```
-
-The request format of Mock Server is shown below.
-
-```
-GET http://localhost:3000/${db-name}/${table-name}
-```
-
 ## License
 
 Copyright © 2017 xorphitus
