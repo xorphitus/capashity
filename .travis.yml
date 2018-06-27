@@ -1,9 +1,10 @@
 language: clojure
 before_install:
+  # TODO: fix the structure and remove them
   - touch databases.edn
   - touch events.edn
 script:
   - lein cljfmt check
-  - lein kibit src/capashity/core.clj
-  - lein eastwood
+  - lein kibit src test
+  - lein eastwood "{:namespaces [:source-paths]}"
   - lein test

@@ -47,49 +47,25 @@ Each event is expressed by a map which has keys shown below.
   * type: map
     * this map is converted to a JSON text
 * `skip`
-  * if true, the event is ignored
+  * if `true`, the event is ignored
   * optional
   * type: boolean
 * `decoy`
-  * if true, the event is going to be fired, but not measured
+  * if `true`, the event is going to be fired, but not measured
   * optional
   * type: boolean
 * `takeover`
-  * if true, the event takes over its template parameter to the next event
+  * if `true`, the event takes over its template parameter to the next event
   * optional
   * type: boolean
 
 #### Template
 
-TBC
+A Template syntax is available for URLs and request bodies in `events.edn`.
 
-#### Decoy event
+If you fire an event with `takeover` option, its response bodies can be available as variables for the next event.
 
-TBC
-
-## For development
-
-Docker Compose and Mock Server are available.
-
-Docker Compose is used for a database.
-
-```
-$ docker-compose up -d
-```
-
-Mock Server is a dummy HTTP server and it inserts records for databases.
-
-```
-$ lein repl
-capashity.core=> (ns capashity.mock-server)
-capashity.mock-server=> (start)
-```
-
-The request format of Mock Server is shown below.
-
-```
-GET http://localhost:3000/${db-name}/${table-name}
-```
+The template engine is [Selmer](https://github.com/yogthos/Selmer) which is inspred by Django.
 
 ## License
 

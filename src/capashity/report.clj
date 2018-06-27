@@ -2,16 +2,11 @@
   (:require [hiccup.core :refer :all]
             [hiccup.page :refer :all]))
 
-;;(defn d []
-;;  (capashity.core/sum-up (deref (:result/histories capashity.core/system))))
-
 (defn extract-column-labels [data]
   (->> data
        first
        :counts
        (map :name)))
-
-(html [:table.table])
 
 (defn tablize [data]
   (let [columns (extract-column-labels data)]

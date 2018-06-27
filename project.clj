@@ -11,14 +11,13 @@
                  [hiccup "1.0.5"]
                  [integrant "0.6.1"]
                  [mysql/mysql-connector-java "5.1.45"]
-                 [selmer "1.11.3"]
-                 ;; for mock server
-                 [ring/ring-core "1.6.3"]
-                 [ring/ring-jetty-adapter "1.6.3"]]
+                 [selmer "1.11.3"]]
   :plugins [[lein-kibit "0.1.6"]
             [lein-cljfmt "0.5.7"]
             [jonase/eastwood "0.2.6"]]
   :main ^:skip-aot capashity.core
   :target-path "target/%s"
   :profiles {:uberjar {:aot :all}
-             :test {:dependencies [[com.h2database/h2 "1.4.197"]]}})
+             :test {:dependencies [[com.h2database/h2 "1.4.197"]
+                                   [ring/ring-core "1.6.3"]
+                                   [ring/ring-jetty-adapter "1.6.3"]]}})

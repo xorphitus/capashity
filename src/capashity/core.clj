@@ -43,11 +43,12 @@
   (ig/init config))
 
 (defn get-tables [db]
-  (let [cache-key (format "%s:%d/%s" (:host db) (:port db) (:dbname db))]
-    (if-let [tbls (get (deref (:result/tables system)) cache-key)]
+  (let [cache-key (format "%s:%d/%s" (:host db) (:port db) (:dbname db))
+        cache-atom (:result/tables system)]
+    (if-let [tbls (get @cache-atom cache-key)]
       tbls
-      (let [tbls (map #(val (first %)) (jdbc/query db "SHOW TABLES"))]
-        (swap! (:result/tables system) assoc cache-key tbls)
+      (let [tbls (map (comp val first) (jdbc/query db "SHOW TABLES"))]
+        (swap! cache-atom assoc cache-key tbls)
         tbls))))
 
 ;; TODO: concatinate count queries for performance
@@ -111,7 +112,7 @@
 (defn labelize-event [ev]
   (timbre/debug {:method ev})
   (format "%s %s"
-          (.toUpperCase (name (:method ev)))
+          (-> ev :method name .toUpperCase)
           (:url ev)))
 
 (defn -main [& args]
