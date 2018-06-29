@@ -118,6 +118,7 @@
 (defn -main [& args]
   (do
     (measure "initial state")
+    ;; TODO: extract them as an function and write some tests
     (loop [[fst & rst] (:setting/events system)
            params {}]
       (timbre/debug params)
