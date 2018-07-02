@@ -116,25 +116,26 @@
           (:url ev)))
 
 (defn parse-events
-  ([events on-event]
-   (parse-events events {} on-event))
-  ([events params on-event]
+  ([events]
+   (parse-events events {} fire measure))
+  ([events params f g]
    (let [[fst & rst] events]
      (timbre/debug params)
-     (let [response (fire fst params)]
+     (let [response (f fst params)]
        (when-not (:decoy fst)
-         (on-event (labelize-event fst)))
+         (g (labelize-event fst)))
        (when (seq rst)
          (recur rst
                 (if (:takeover fst)
                   (merge params response)
                   response)
-                on-event))))))
+                f
+                g))))))
 
 (defn -main [& args]
   (let [histories (:result/histories system)]
     (measure "initial state")
-    (parse-events (:setting/events system) measure)
+    (parse-events (:setting/events system))
     (spit "report.html"
           (publish-html
            (sum-up @histories)))))

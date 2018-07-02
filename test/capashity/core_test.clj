@@ -69,3 +69,55 @@
   (testing "generic case"
     (let [event {:method :post :url "https://example.com/foo"}]
       (is "POST https://example.com/foo" (labelize-event event)))))
+
+(deftest test-parse-events
+  (testing "just one event"
+    (let [cnt (atom 0)
+          events [{:method :get, :url "http://example.com"}]]
+      (parse-events events
+                    {}
+                    (fn [_ _] nil)
+                    (fn [_] (swap! cnt inc)))
+      (is @cnt 1)))
+  (testing "two events"
+    (let [cnt (atom 0)
+          events [{:method :get,  :url "http://example.com"}
+                  {:method :post, :url "http://example.com"}]]
+      (parse-events events
+                    {}
+                    (fn [_ _] nil)
+                    (fn [_] (swap! cnt inc)))
+      (is @cnt 2)))
+  (testing "with decoy"
+    (let [cnt (atom 0)
+          events [{:method :get,  :url "http://example.com", :decoy true}
+                  {:method :post, :url "http://example.com", :decoy false}]]
+      (parse-events events
+                    {}
+                    (fn [_ _] nil)
+                    (fn [_] (swap! cnt inc)))
+      (is @cnt 1)))
+  (testing "with takeover"
+    (let [params (atom [])
+          events [{:method :get,  :url "http://example.com", :takeover true}
+                  {:method :post, :url "http://example.com/{{foo.bar}}"}]]
+      (parse-events events
+                    {}
+                    (fn [_ param]
+                      (do (swap! params conj param)
+                          {:foo {:bar 42}}))
+                    identity)
+      (is params [{}
+                  {:foo {:bar 42}}])))
+  (testing "without takeover"
+    (let [params (atom [])
+          events [{:method :get,  :url "http://example.com", :takeover false}
+                  {:method :post, :url "http://example.com/{{foo.bar}}"}]]
+      (parse-events events
+                    {}
+                    (fn [_ param]
+                      (do (swap! params conj param)
+                          {:foo {:bar 42}}))
+                    identity)
+      (is params [{}
+                  {}]))))
