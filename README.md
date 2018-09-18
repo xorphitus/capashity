@@ -4,7 +4,7 @@
 
 Capashity estimates how many records will be inserted into a database for a Web system.
 
-It calls a web system's HTTP request  which create some records, then it measures the counts of records.
+It calls a web system's HTTP request which creates records, then it counts of records.
 
 * suppots multiple databases
 * only supports RDBMS
