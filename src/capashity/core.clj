@@ -115,21 +115,27 @@
           (-> ev :method name .toUpperCase)
           (:url ev)))
 
+(defn parse-events
+  ([events]
+   (parse-events events {} fire measure))
+  ([events params f g]
+   (let [[fst & rst] events]
+     (timbre/debug params)
+     (let [response (f fst params)]
+       (when-not (:decoy fst)
+         (g (labelize-event fst)))
+       (when (seq rst)
+         (recur rst
+                (if (:takeover fst)
+                  (merge params response)
+                  response)
+                f
+                g))))))
+
 (defn -main [& args]
-  (do
+  (let [histories (:result/histories system)]
     (measure "initial state")
-    (loop [[fst & rst] (:setting/events system)
-           params {}]
-      (timbre/debug params)
-      (let [response (fire fst params)]
-        (when-not (:decoy fst)
-          (measure (labelize-event fst)))
-        (when (seq rst)
-          (recur rst
-                 (if (:takeover fst)
-                   (merge params response)
-                   response)))))
-    (let [histories (:result/histories system)]
-      (spit "report.html"
-            (publish-html
-             (sum-up @histories))))))
+    (parse-events (:setting/events system))
+    (spit "report.html"
+          (publish-html
+           (sum-up @histories)))))
